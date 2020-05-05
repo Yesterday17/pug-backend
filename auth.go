@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Authorize(secret string) gin.HandlerFunc {
+func Authorize(config *Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		auth, err := c.Request.Cookie("pub_session")
 		if err != nil || !auth.HttpOnly {
@@ -17,10 +17,10 @@ func Authorize(secret string) gin.HandlerFunc {
 		}
 
 		token, err := jwt.Parse(auth.Value, func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
-			return []byte(secret), nil
+			return config.pub, nil
 		})
 		if token == nil || err != nil {
 			c.Abort()

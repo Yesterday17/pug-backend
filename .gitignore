@@ -2,4 +2,5 @@
 *.db
 config.json
 
+*.pem
 key

@@ -13,6 +13,10 @@ func main() {
 	r := gin.Default()
 	db := models.InitModels(&config.ModelSettings)
 
+	if !config.Debug {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	r.Use(func(ctx *gin.Context) {
 		ctx.Set("db", db)
 		ctx.Next()
@@ -26,7 +30,7 @@ func main() {
 	r.PUT("/user/register", controllers.UserRegister)
 
 	// methods need authorization
-	auth := Authorize(config.Secret)
+	auth := Authorize(config)
 	r.POST("/user/logout", auth, controllers.UserLogout)
 	r.GET("/user", auth, nil)
 

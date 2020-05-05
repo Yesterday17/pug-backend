@@ -1,23 +1,23 @@
 package main
 
 import (
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
 	"encoding/json"
+	"encoding/pem"
 	"io/ioutil"
 	"log"
 
 	"github.com/Yesterday17/pug-backend/models"
+	"github.com/dgrijalva/jwt-go"
 	_ "github.com/json-iterator/go"
-	uuid "github.com/satori/go.uuid"
 )
 
 type Config struct {
-	// Auto generated per startup
-	// It means user login would break after server restart
-	Secret string
-
 	// Auto loaded keys
-	PublicKey  []byte
-	PrivateKey []byte
+	key *rsa.PrivateKey `json:"-"`
+	pub *rsa.PublicKey  `json:"-"`
 
 	models.ModelSettings
 
@@ -28,9 +28,7 @@ type Config struct {
 }
 
 func LoadConfig() *Config {
-	config := Config{
-		Secret: uuid.NewV4().String(),
-	}
+	config := Config{}
 
 	file, err := ioutil.ReadFile("config.json")
 	if err != nil {
@@ -42,6 +40,58 @@ func LoadConfig() *Config {
 		log.Fatal("Failed to unmarshal json file", err)
 	}
 
-	// TODO: Load
+	if config.PublicKeyPath != "" && config.PrivateKeyPath != "" {
+		// Public key
+		key, err := ioutil.ReadFile(config.PublicKeyPath)
+		if err != nil {
+			log.Fatal("Failed to load public key", err)
+		}
+		config.pub, err = jwt.ParseRSAPublicKeyFromPEM(key)
+		if err != nil {
+			log.Fatal("Failed to parse public key")
+		}
+
+		// Private key
+		key, err = ioutil.ReadFile(config.PrivateKeyPath)
+		if err != nil {
+			log.Fatal("Failed to load private key", err)
+		}
+		config.key, err = jwt.ParseRSAPrivateKeyFromPEM(key)
+		if err != nil {
+			log.Fatal("Failed to parse private key")
+		}
+	} else {
+		privateKey, _ := rsa.GenerateKey(rand.Reader, 4096)
+		bytes, _ := x509.MarshalPKIXPublicKey(&privateKey.PublicKey)
+		p := pem.EncodeToMemory(&pem.Block{
+			Type:  "RSA PUBLIC KEY",
+			Bytes: bytes,
+		})
+		_ = ioutil.WriteFile("key/pub.pem", p, 0644)
+
+		bytes = x509.MarshalPKCS1PrivateKey(privateKey)
+		p = pem.EncodeToMemory(&pem.Block{
+			Type:  "RSA PRIVATE KEY",
+			Bytes: bytes,
+		})
+		_ = ioutil.WriteFile("key/key.pem", p, 0644)
+
+		config.PrivateKeyPath = "key/key.pem"
+		config.PublicKeyPath = "key/pub.pem"
+		SaveConfig(&config)
+	}
+
 	return &config
+}
+
+func SaveConfig(config *Config) {
+	data, err := json.Marshal(config)
+	if err != nil {
+		log.Fatal("Failed to marshal config struct", err)
+	}
+
+	err = ioutil.WriteFile("config.json", data, 0777)
+	if err != nil {
+		log.Fatal("Failed to save config file", err)
+	}
 }
