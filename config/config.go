@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"crypto/rand"
@@ -16,8 +16,8 @@ import (
 
 type Config struct {
 	// Auto loaded keys
-	key *rsa.PrivateKey `json:"-"`
-	pub *rsa.PublicKey  `json:"-"`
+	KeyPrivate *rsa.PrivateKey `json:"-"`
+	KeyPublic  *rsa.PublicKey  `json:"-"`
 
 	models.ModelSettings
 
@@ -46,7 +46,7 @@ func LoadConfig() *Config {
 		if err != nil {
 			log.Fatal("Failed to load public key", err)
 		}
-		config.pub, err = jwt.ParseRSAPublicKeyFromPEM(key)
+		config.KeyPublic, err = jwt.ParseRSAPublicKeyFromPEM(key)
 		if err != nil {
 			log.Fatal("Failed to parse public key")
 		}
@@ -56,7 +56,7 @@ func LoadConfig() *Config {
 		if err != nil {
 			log.Fatal("Failed to load private key", err)
 		}
-		config.key, err = jwt.ParseRSAPrivateKeyFromPEM(key)
+		config.KeyPrivate, err = jwt.ParseRSAPrivateKeyFromPEM(key)
 		if err != nil {
 			log.Fatal("Failed to parse private key")
 		}
