@@ -56,6 +56,7 @@ func SessionCreate(c *gin.Context) {
 	if err != nil {
 		c.Abort()
 		c.JSON(400, e.ErrInputValid)
+		return
 	}
 
 	var user models.User
@@ -63,11 +64,13 @@ func SessionCreate(c *gin.Context) {
 	if db.Error != nil {
 		c.Abort()
 		c.JSON(500, e.ErrDBRead)
+		return
 	}
 
 	if user.UUID == "" || user.Password != pass {
 		c.Abort()
 		c.JSON(400, e.ErrNoUser)
+		return
 	}
 
 	c.Set("uuid", user.UUID)
@@ -81,6 +84,7 @@ func SessionUpdate(c *gin.Context) {
 	if err != nil {
 		c.Abort()
 		c.JSON(500, e.ErrFailTokenGen)
+		return
 	}
 
 	c.SetCookie("pug_session", token, int(time.Hour*12), "", "", false, true)
@@ -110,6 +114,7 @@ func UserRegister(c *gin.Context) {
 	var user models.User
 	db.First(&user, "username = ?", name)
 	if user.UUID != "" {
+		c.Abort()
 		c.JSON(400, e.ErrUserExist)
 		return
 	}
@@ -129,6 +134,7 @@ func UserRegister(c *gin.Context) {
 	if db.Error != nil {
 		c.JSON(500, e.ErrDBWrite)
 		c.Abort()
+		return
 	}
 }
 
