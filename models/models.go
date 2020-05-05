@@ -9,10 +9,10 @@ import (
 )
 
 type ModelSettings struct {
-	Debug bool
+	Debug bool `json:"debug"`
 
-	DBType   string
-	DBConfig map[string]string
+	DBType   string            `json:"db_type"`
+	DBConfig map[string]string `json:"db_config"`
 }
 
 func InitModels(s *ModelSettings) (db *gorm.DB) {

@@ -23,6 +23,8 @@ type Config struct {
 
 	PublicKeyPath  string `json:"public_key_path"`
 	PrivateKeyPath string `json:"private_key_path"`
+
+	Listen string `json:"listen"`
 }
 
 func LoadConfig() *Config {
@@ -39,5 +41,7 @@ func LoadConfig() *Config {
 	if err != nil {
 		log.Fatal("Failed to unmarshal json file", err)
 	}
+
+	// TODO: Load
 	return &config
 }

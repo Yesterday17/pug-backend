@@ -30,7 +30,7 @@ func main() {
 	r.POST("/user/logout", auth, controllers.UserLogout)
 	r.GET("/user", auth, nil)
 
-	if err := r.Run(":14514"); err != nil {
+	if err := r.Run(config.Listen); err != nil {
 		log.Fatal(err)
 	}
 }
