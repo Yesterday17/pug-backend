@@ -9,10 +9,9 @@ import (
 )
 
 func main() {
+	config := LoadConfig()
 	r := gin.Default()
-	db := models.InitModels(models.InitSettings{
-		Debug: true,
-	})
+	db := models.InitModels(&config.ModelSettings)
 
 	r.Use(func(ctx *gin.Context) {
 		ctx.Set("db", db)
@@ -27,7 +26,7 @@ func main() {
 	r.PUT("/user/register", controllers.UserRegister)
 
 	// methods need authorization
-	auth := Authorize("test_token")
+	auth := Authorize(config.Secret)
 	r.POST("/user/logout", auth, controllers.UserLogout)
 	r.GET("/user", auth, nil)
 

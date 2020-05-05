@@ -35,7 +35,7 @@ func Authorize(secret string) gin.HandlerFunc {
 			return
 		}
 
-		c.Set("id", claims["id"].(string))
+		c.Set("uuid", claims["uuid"].(string))
 		c.Next()
 	}
 }
