@@ -21,8 +21,9 @@ type Config struct {
 
 	models.ModelSettings
 
-	PublicKeyPath  string `json:"public_key_path"`
-	PrivateKeyPath string `json:"private_key_path"`
+	PublicKeyPath   string `json:"public_key_path"`
+	PrivateKeyPath  string `json:"private_key_path"`
+	PublicKeyString string `json:"-"`
 
 	Listen string `json:"listen"`
 }
@@ -46,6 +47,7 @@ func LoadConfig() *Config {
 		if err != nil {
 			log.Fatal("Failed to load public key", err)
 		}
+		config.PublicKeyString = string(key)
 		config.KeyPublic, err = jwt.ParseRSAPublicKeyFromPEM(key)
 		if err != nil {
 			log.Fatal("Failed to parse public key")

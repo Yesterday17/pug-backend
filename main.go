@@ -25,16 +25,17 @@ func main() {
 		ctx.Next()
 	})
 
-	// put frontend here
+	// frontend
 	r.StaticFile("/", "./public")
 
-	// methods does not need authorization
-	r.POST("/user/login", controllers.UserLogin)
-	r.PUT("/user/register", controllers.UserRegister)
+	// Session
+	r.POST("/session", controllers.SessionCreate, controllers.SessionUpdate)
+	r.PUT("/session", controllers.UserRegister, controllers.SessionUpdate)
+	r.GET("/session/key", controllers.SessionGetKey)
+	r.DELETE("/session", auth.Authorize, controllers.SessionRevoke)
 
-	// methods need authorization
-	r.POST("/user/logout", auth.Authorize, controllers.UserLogout)
-	r.GET("/user", auth.Authorize, nil)
+	// User
+	r.GET("/user", auth.Authorize, nil, controllers.SessionUpdate)
 
 	if err := r.Run(cfg.Listen); err != nil {
 		log.Fatal(err)
