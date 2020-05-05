@@ -25,7 +25,8 @@ type Config struct {
 	PrivateKeyPath  string `json:"private_key_path"`
 	PublicKeyString string `json:"-"`
 
-	Listen string `json:"listen"`
+	CrossOrigin bool   `json:"cross_origin"`
+	Listen      string `json:"listen"`
 }
 
 func LoadConfig() *Config {

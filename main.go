@@ -8,6 +8,7 @@ import (
 	"github.com/Yesterday17/pug-backend/controllers"
 	"github.com/Yesterday17/pug-backend/models"
 	"github.com/gin-gonic/gin"
+	"github.com/itsjamie/gin-cors"
 )
 
 func main() {
@@ -19,6 +20,7 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
+	// global variables
 	r.Use(func(ctx *gin.Context) {
 		ctx.Set("db", db)
 		ctx.Set("config", cfg)
@@ -27,6 +29,12 @@ func main() {
 
 	// frontend
 	r.StaticFile("/", "./public")
+
+	if cfg.CrossOrigin {
+		r.Use(cors.Middleware(cors.Config{
+			Origins: "*",
+		}))
+	}
 
 	// Session
 	r.POST("/session", controllers.SessionCreate, controllers.SessionUpdate)

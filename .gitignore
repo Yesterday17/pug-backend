@@ -1,6 +1,13 @@
+# idea
 .idea
-*.db
-config.json
 
+# release
+*.exe
+*.zip
+*.tar.gz
+
+# runtime
 *.pem
+*.db
 key
+config.json
