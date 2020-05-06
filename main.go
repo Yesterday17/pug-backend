@@ -33,7 +33,7 @@ func main() {
 	if cfg.CrossOrigin {
 		r.Use(cors.Middleware(cors.Config{
 			Origins:     "*",
-			Methods:     "GET, PUT, POST, DELETE",
+			Methods:     "GET, PUT, POST, PATCH, DELETE",
 			Credentials: true,
 		}))
 	}

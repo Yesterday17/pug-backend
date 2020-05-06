@@ -136,6 +136,7 @@ func UserRegister(c *gin.Context) {
 		c.Abort()
 		return
 	}
+	c.Status(201)
 }
 
 func SessionGetKey(c *gin.Context) {
