@@ -9,7 +9,8 @@ var (
 	ErrNoUser    = Error{500, "用户不存在"}
 	ErrUserExist = Error{501, "用户已存在"}
 
-	ErrInputValid = Error{520, "输入验证失败"}
+	ErrInputValid    = Error{520, "输入验证失败"}
+	ErrInputNotFound = Error{521, "未找到对应输入"}
 
 	ErrFailTokenGen = Error{540, "凭据创建失败"}
 

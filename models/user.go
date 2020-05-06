@@ -12,4 +12,6 @@ type User struct {
 
 type UserSettings struct {
 	Model
+
+	UUID string `json:"-" gorm:"unique;not null"`
 }

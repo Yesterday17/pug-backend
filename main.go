@@ -46,6 +46,7 @@ func main() {
 
 	// User
 	r.GET("/user", auth.Authorize, controllers.UserInfoGet, controllers.SessionUpdate)
+	r.GET("/user/setting", auth.Authorize, controllers.UserSettingGet, controllers.SessionUpdate)
 
 	if err := r.Run(cfg.Listen); err != nil {
 		log.Fatal(err)
