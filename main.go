@@ -45,7 +45,7 @@ func main() {
 	r.DELETE("/session", auth.Authorize, controllers.SessionRevoke)
 
 	// User
-	r.GET("/user", auth.Authorize, nil, controllers.SessionUpdate)
+	r.GET("/user", auth.Authorize, controllers.UserInfoGet, controllers.SessionUpdate)
 
 	if err := r.Run(cfg.Listen); err != nil {
 		log.Fatal(err)

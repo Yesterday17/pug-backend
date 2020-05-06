@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"log"
+	"time"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -13,6 +14,13 @@ type ModelSettings struct {
 
 	DBType   string            `json:"db_type"`
 	DBConfig map[string]string `json:"db_config"`
+}
+
+type Model struct {
+	ID        uint       `gorm:"primary_key" json:"-"`
+	CreatedAt time.Time  `json:"-"`
+	UpdatedAt time.Time  `json:"-"`
+	DeletedAt *time.Time `sql:"index" json:"-"`
 }
 
 func InitModels(s *ModelSettings) (db *gorm.DB) {
