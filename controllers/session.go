@@ -55,7 +55,7 @@ func SessionCreate(c *gin.Context) {
 	name, pass, err := userPass(c)
 	if err != nil {
 		c.Abort()
-		c.JSON(400, e.ErrInputValid)
+		c.JSON(400, e.ErrInputInvalid)
 		return
 	}
 
@@ -88,6 +88,7 @@ func SessionUpdate(c *gin.Context) {
 	}
 
 	c.SetCookie("pug_session", token, int(time.Hour*12), "", "", false, true)
+	c.JSON(200, e.NoError)
 }
 
 func SessionRevoke(c *gin.Context) {
@@ -100,6 +101,7 @@ func SessionRevoke(c *gin.Context) {
 	}
 
 	c.SetCookie("pug_session", token, int(time.Minute*1), "", "", false, true)
+	c.JSON(200, e.NoError)
 }
 
 func UserRegister(c *gin.Context) {
@@ -107,7 +109,7 @@ func UserRegister(c *gin.Context) {
 
 	name, pass, err := userPass(c)
 	if err != nil {
-		c.JSON(400, e.ErrInputValid)
+		c.JSON(400, e.ErrInputInvalid)
 		return
 	}
 
@@ -136,7 +138,7 @@ func UserRegister(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	c.Status(201)
+	c.JSON(201, e.NoError)
 }
 
 func SessionGetKey(c *gin.Context) {

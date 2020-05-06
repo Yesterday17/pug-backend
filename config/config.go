@@ -4,17 +4,19 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
-	"encoding/json"
 	"encoding/pem"
 	"io/ioutil"
 	"log"
 
 	"github.com/Yesterday17/pug-backend/models"
 	"github.com/dgrijalva/jwt-go"
-	_ "github.com/json-iterator/go"
+	"github.com/json-iterator/go"
 )
 
+var json = jsoniter.ConfigCompatibleWithStandardLibrary
+
 type Config struct {
+
 	// Auto loaded keys
 	KeyPrivate *rsa.PrivateKey `json:"-"`
 	KeyPublic  *rsa.PublicKey  `json:"-"`
