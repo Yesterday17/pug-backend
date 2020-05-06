@@ -41,3 +41,26 @@ func TestGetFieldByTag(t *testing.T) {
 		t.Error(fmt.Errorf("expects %v, got %v", a.A, ret))
 	}
 }
+
+func TestSetFieldByTag(t *testing.T) {
+	a := testStructA{
+		A: "test",
+		B: 114514,
+		C: map[string]string{"a": "1"},
+		D: nil,
+	}
+
+	if err := SetFieldByTag(&a, "json", "a", 1919810); err != nil {
+		t.Error(err)
+	} else if a.B != 1919810 {
+		t.Error("value not set")
+	}
+
+	if err := SetFieldByTag(&a, "json", "map", map[string]string{"a": "2"}); err != nil {
+		t.Error(err)
+	} else if val, ok := a.C["a"]; !ok {
+		t.Error("key not found")
+	} else if val != "2" {
+		t.Error("value not set")
+	}
+}
