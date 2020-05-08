@@ -19,20 +19,13 @@ import (
 func userPass(c *gin.Context) (string, string, error) {
 	cfg := c.MustGet("config").(*config.Config)
 
-	form, err := c.MultipartForm()
-	if err != nil {
-		return "", "", err
+	name, ok := c.GetPostForm("username")
+	if !ok || name == "" {
+		return "", "", errors.New("username or password is empty")
 	}
 
-	var name, pass string
-	if form.Value["username"] != nil && len(form.Value["username"]) == 1 {
-		name = form.Value["username"][0]
-	}
-	if form.Value["password"] != nil && len(form.Value["password"]) == 1 {
-		pass = form.Value["password"][0]
-	}
-
-	if name == "" || pass == "" {
+	pass, ok := c.GetPostForm("password")
+	if !ok || pass == "" {
 		return "", "", errors.New("username or password is empty")
 	}
 
@@ -128,8 +121,6 @@ func UserRegister(c *gin.Context) {
 		UUID:     id,
 		Username: name,
 		Password: pass,
-		Name:     id,
-		Icon:     "",
 	}
 	db.Create(&user)
 
