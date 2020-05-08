@@ -42,6 +42,6 @@ func InitModels(s *ModelSettings) (db *gorm.DB) {
 	}
 
 	db.AutoMigrate(&User{})
-	// db.AutoMigrate(&UserSettings{})
+	db.AutoMigrate(&ModuleRestrictRule{})
 	return
 }
