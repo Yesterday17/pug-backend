@@ -13,8 +13,7 @@ func Authorize(c *gin.Context) {
 
 	auth, err := c.Request.Cookie("pug_session")
 	if err != nil {
-		c.Abort()
-		c.Status(401)
+		c.AbortWithStatus(401)
 		return
 	}
 
@@ -25,15 +24,13 @@ func Authorize(c *gin.Context) {
 		return cfg.KeyPublic, nil
 	})
 	if token == nil || err != nil {
-		c.Abort()
-		c.Status(401)
+		c.AbortWithStatus(401)
 		return
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
-		c.Abort()
-		c.Status(401)
+		c.AbortWithStatus(401)
 		return
 	}
 

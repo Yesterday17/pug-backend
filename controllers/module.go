@@ -24,8 +24,7 @@ func InitModulePipeRestriction(c *gin.Context) {
 		db.Find(&ModulePipeRestriction)
 		if db.Error != nil {
 			ModulePipeRestriction = nil
-			c.Abort()
-			c.JSON(500, e.ErrDBRead)
+			c.AbortWithStatusJSON(500, e.ErrDBRead)
 		}
 	}
 }

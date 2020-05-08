@@ -47,22 +47,19 @@ func SessionCreate(c *gin.Context) {
 
 	name, pass, err := userPass(c)
 	if err != nil {
-		c.Abort()
-		c.JSON(400, e.ErrInputInvalid)
+		c.AbortWithStatusJSON(400, e.ErrInputInvalid)
 		return
 	}
 
 	var user models.User
 	db.First(&user, "username = ?", name)
 	if db.Error != nil {
-		c.Abort()
-		c.JSON(500, e.ErrDBRead)
+		c.AbortWithStatusJSON(500, e.ErrDBRead)
 		return
 	}
 
 	if user.UUID == "" || user.Password != pass {
-		c.Abort()
-		c.JSON(400, e.ErrNoUser)
+		c.AbortWithStatusJSON(400, e.ErrNoUser)
 		return
 	}
 
@@ -75,8 +72,7 @@ func SessionUpdate(c *gin.Context) {
 
 	token, err := auth.GenerateToken(cfg.KeyPrivate, id, time.Hour*12)
 	if err != nil {
-		c.Abort()
-		c.JSON(500, e.ErrFailTokenGen)
+		c.AbortWithStatusJSON(500, e.ErrFailTokenGen)
 		return
 	}
 
@@ -108,8 +104,7 @@ func UserRegister(c *gin.Context) {
 	var user models.User
 	db.First(&user, "username = ?", name)
 	if user.UUID != "" {
-		c.Abort()
-		c.JSON(400, e.ErrUserExist)
+		c.AbortWithStatusJSON(400, e.ErrUserExist)
 		return
 	}
 
@@ -124,8 +119,7 @@ func UserRegister(c *gin.Context) {
 	db.Create(&user)
 
 	if db.Error != nil {
-		c.JSON(500, e.ErrDBWrite)
-		c.Abort()
+		c.AbortWithStatusJSON(500, e.ErrDBWrite)
 		return
 	}
 	c.JSON(201, e.NoError)
