@@ -35,5 +35,6 @@ func Authorize(c *gin.Context) {
 	}
 
 	c.Set("uuid", claims["sub"].(string))
+	c.Set("level", claims["level"].(int))
 	c.Next()
 }

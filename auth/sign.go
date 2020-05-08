@@ -7,10 +7,11 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-func GenerateToken(key *rsa.PrivateKey, uuid string, duration time.Duration) (string, error) {
+func GenerateToken(key *rsa.PrivateKey, uuid string, level int, duration time.Duration) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
-		"sub": uuid,
-		"exp": time.Now().Add(duration).Unix(),
+		"sub":   uuid,
+		"exp":   time.Now().Add(duration).Unix(),
+		"level": level,
 	})
 
 	tokenStr, err := token.SignedString(key)
@@ -21,5 +22,5 @@ func GenerateToken(key *rsa.PrivateKey, uuid string, duration time.Duration) (st
 }
 
 func CancelToken(key *rsa.PrivateKey) (string, error) {
-	return GenerateToken(key, "", 0)
+	return GenerateToken(key, "", 0, 0)
 }

@@ -64,13 +64,15 @@ func SessionCreate(c *gin.Context) {
 	}
 
 	c.Set("uuid", user.UUID)
+	c.Set("level", user.UserLevel)
 }
 
 func SessionUpdate(c *gin.Context) {
 	cfg := c.MustGet("config").(*config.Config)
 	id := c.MustGet("uuid").(string)
+	level := c.MustGet("level").(int)
 
-	token, err := auth.GenerateToken(cfg.KeyPrivate, id, time.Hour*12)
+	token, err := auth.GenerateToken(cfg.KeyPrivate, id, level, time.Hour*12)
 	if err != nil {
 		c.AbortWithStatusJSON(500, e.ErrFailTokenGen)
 		return
