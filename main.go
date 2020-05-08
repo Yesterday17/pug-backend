@@ -59,7 +59,8 @@ func main() {
 	r.PATCH("/user/setting", auth.Authorize, controllers.UserSettingPatch, controllers.SessionUpdate)
 
 	// Module
-	r.GET("/module", auth.Authorize, controllers.InitModulePipeRestriction, controllers.GetModuleInfo, controllers.SessionUpdate)
+	r.GET("/module", auth.Authorize, controllers.InitModulePipeRestriction, controllers.GetAllModuleInfo, controllers.SessionUpdate)
+	r.GET("/module/:id", auth.Authorize, controllers.InitModulePipeRestriction, controllers.GetModuleInfo, controllers.SessionUpdate)
 
 	if err := r.Run(cfg.Listen); err != nil {
 		log.Fatal(err)

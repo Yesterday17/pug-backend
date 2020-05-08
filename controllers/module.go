@@ -30,7 +30,7 @@ func InitModulePipeRestriction(c *gin.Context) {
 	}
 }
 
-func GetModuleInfo(c *gin.Context) {
+func GetAllModuleInfo(c *gin.Context) {
 	mgr := c.MustGet("manager").(api.ModuleManager)
 	var ret []ModuleInfo
 
@@ -46,4 +46,21 @@ func GetModuleInfo(c *gin.Context) {
 	}
 
 	c.JSON(200, ret)
+}
+
+func GetModuleInfo(c *gin.Context) {
+	mgr := c.MustGet("manager").(api.ModuleManager)
+
+	m := mgr.Module(c.Param("id"))
+	if m == nil {
+		c.AbortWithStatusJSON(400, e.ErrInputInvalid)
+		return
+	}
+
+	c.JSON(200, ModuleInfo{
+		Name:        m.Name(),
+		Description: m.Description(),
+		Author:      m.Author(),
+		Usage:       m.Usage(),
+	})
 }
