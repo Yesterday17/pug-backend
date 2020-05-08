@@ -81,7 +81,6 @@ func SessionUpdate(c *gin.Context) {
 	}
 
 	c.SetCookie("pug_session", token, int(time.Hour*12), "", "", false, true)
-	c.JSON(200, e.NoError)
 }
 
 func SessionRevoke(c *gin.Context) {
