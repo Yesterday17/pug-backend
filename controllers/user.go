@@ -96,7 +96,7 @@ func UserSettingPatch(c *gin.Context) {
 		return
 	}
 
-	category := utils.GetFieldByTag(settings, "json", ca)
+	category := utils.GetFieldByTag(&settings, "json", ca)
 	if category == nil {
 		c.JSON(404, e.ErrInputNotFound)
 		return
@@ -104,7 +104,7 @@ func UserSettingPatch(c *gin.Context) {
 
 	var success = 0
 	for k, v := range input {
-		err = utils.SetFieldByTag(&category, "json", k, v)
+		err = utils.SetFieldByTag(category, "json", k, v)
 		if err == nil {
 			success++
 		}

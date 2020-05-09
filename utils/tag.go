@@ -5,19 +5,7 @@ import (
 	"reflect"
 )
 
-func GetFieldByTag(i interface{}, tag, name string) interface{} {
-	t := reflect.TypeOf(i)
-	v := reflect.ValueOf(i)
-	for i := 0; i < t.NumField(); i++ {
-		f := t.Field(i)
-		if name == f.Tag.Get(tag) {
-			return v.Field(i).Interface()
-		}
-	}
-	return nil
-}
-
-func SetFieldByTag(i interface{}, tag, name string, value interface{}) error {
+func GetFieldByTag(i interface{}, tag, name string) *reflect.Value {
 	t := reflect.TypeOf(i)
 	v := reflect.ValueOf(i)
 
@@ -27,6 +15,25 @@ func SetFieldByTag(i interface{}, tag, name string, value interface{}) error {
 	}
 
 	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+		if name == f.Tag.Get(tag) {
+			vv := v.Field(i)
+			return &vv
+		}
+	}
+	return nil
+}
+
+func SetFieldByTag(i *reflect.Value, tag, name string, value interface{}) error {
+	v := *i
+	t := v.Type()
+
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+		v = v.Elem()
+	}
+
+	for i := 0; i < v.NumField(); i++ {
 		f := t.Field(i)
 		if name == f.Tag.Get(tag) {
 			rf := v.Field(i)
