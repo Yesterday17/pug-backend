@@ -134,6 +134,7 @@ func UserRegister(c *gin.Context) {
 		c.AbortWithStatusJSON(500, e.ErrDBWrite)
 		return
 	}
+	SessionUpdate(c)
 	c.JSON(201, e.NoError)
 }
 

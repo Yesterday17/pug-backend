@@ -49,20 +49,20 @@ func main() {
 
 	// Session
 	r.POST("/session", controllers.SessionCreate, controllers.SessionUpdate)
-	r.PUT("/session", controllers.UserRegister, controllers.SessionUpdate)
+	r.PUT("/session", controllers.UserRegister)
 	r.GET("/session/key", controllers.SessionGetKey)
 	r.DELETE("/session", auth.Authorize, controllers.SessionRevoke)
 
 	// User
-	r.GET("/user", auth.Authorize, controllers.UserInfoGet, controllers.SessionUpdate)
-	r.GET("/user/setting", auth.Authorize, controllers.UserSettingGet, controllers.SessionUpdate)
-	r.PATCH("/user/setting", auth.Authorize, controllers.UserSettingPatch, controllers.SessionUpdate)
+	r.GET("/user", auth.Authorize, controllers.SessionUpdate, controllers.UserInfoGet)
+	r.GET("/user/setting", auth.Authorize, controllers.SessionUpdate, controllers.UserSettingGet)
+	r.PATCH("/user/setting", auth.Authorize, controllers.SessionUpdate, controllers.UserSettingPatch)
 
 	// Module
-	r.GET("/module", auth.Authorize, controllers.InitModulePipeRestriction, controllers.GetAllModuleInfo, controllers.SessionUpdate)
-	r.GET("/module/:module", auth.Authorize, controllers.InitModulePipeRestriction, controllers.GetModuleInfo, controllers.SessionUpdate)
-	r.PATCH("/module/:module", auth.Authorize, controllers.InitModulePipeRestriction, controllers.EditModulePipeRestriction, controllers.SessionUpdate)
-	r.PATCH("/module/:module/:pipe", auth.Authorize, controllers.InitModulePipeRestriction, controllers.EditModulePipeRestriction, controllers.SessionUpdate)
+	r.GET("/module", auth.Authorize, controllers.SessionUpdate, controllers.InitModulePipeRestriction, controllers.GetAllModuleInfo)
+	r.GET("/module/:module", auth.Authorize, controllers.SessionUpdate, controllers.InitModulePipeRestriction, controllers.GetModuleInfo)
+	r.PATCH("/module/:module", auth.Authorize, controllers.SessionUpdate, controllers.InitModulePipeRestriction, controllers.EditModulePipeRestriction)
+	r.PATCH("/module/:module/:pipe", auth.Authorize, controllers.SessionUpdate, controllers.InitModulePipeRestriction, controllers.EditModulePipeRestriction)
 
 	if err := r.Run(cfg.Listen); err != nil {
 		log.Fatal(err)
