@@ -11,6 +11,7 @@ import (
 	"github.com/Yesterday17/pug-backend/config"
 	e "github.com/Yesterday17/pug-backend/error"
 	"github.com/Yesterday17/pug-backend/models"
+	"github.com/Yesterday17/pug-backend/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	uuid "github.com/satori/go.uuid"
@@ -112,11 +113,20 @@ func UserRegister(c *gin.Context) {
 
 	id := uuid.NewV4().String()
 	c.Set("uuid", id)
+	c.Set("level", 0)
 
 	user = models.User{
-		UUID:     id,
-		Username: name,
-		Password: pass,
+		UUID:      id,
+		Username:  name,
+		Password:  pass,
+		UserLevel: 0,
+		Setting: models.UserSettings{
+			Account: models.UserAccountSettings{
+				Name:  utils.GetPostForm(c, "name", ""),
+				Email: utils.GetPostForm(c, "email", ""),
+				Icon:  utils.GetPostForm(c, "icon", ""),
+			},
+		},
 	}
 	db.Create(&user)
 

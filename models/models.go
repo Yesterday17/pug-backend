@@ -17,10 +17,15 @@ type ModelSettings struct {
 }
 
 type Model struct {
-	ID        uint       `gorm:"primary_key" json:"-"`
 	CreatedAt time.Time  `json:"-"`
 	UpdatedAt time.Time  `json:"-"`
 	DeletedAt *time.Time `sql:"index" json:"-"`
+}
+
+type ModelWithID struct {
+	Model
+
+	ID uint `gorm:"primary_key" json:"-"`
 }
 
 func InitModels(s *ModelSettings) (db *gorm.DB) {
@@ -42,6 +47,9 @@ func InitModels(s *ModelSettings) (db *gorm.DB) {
 	}
 
 	db.AutoMigrate(&User{})
+	db.AutoMigrate(&UserSettings{})
+	db.AutoMigrate(&UserAccountSettings{})
+
 	db.AutoMigrate(&ModuleRestrictRule{})
 	return
 }

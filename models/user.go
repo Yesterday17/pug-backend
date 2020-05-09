@@ -3,13 +3,18 @@ package models
 type User struct {
 	Model
 
-	UUID      string `json:"uuid" gorm:"unique;not null"`
+	UUID      string `json:"uuid" gorm:"primary_key"`
 	Username  string `json:"username" gorm:"unique;not null"`
 	Password  string `json:"-" gorm:"not null"`
 	UserLevel int    `json:"level" gorm:"not null"`
+
+	Setting UserSettings `json:"setting" gorm:"foreignKey:uuid"`
 }
 
 type UserAccountSettings struct {
+	Model
+
+	UUID  string `json:"-" gorm:"primary_key"`
 	Name  string `json:"name" gorm:"not null"`
 	Email string `json:"email"`
 	Icon  string `json:"icon"`
@@ -17,7 +22,7 @@ type UserAccountSettings struct {
 
 type UserSettings struct {
 	Model
+	UUID string `json:"-" gorm:"primary_key"`
 
-	UUID    string              `json:"-" gorm:"unique;not null"`
-	Account UserAccountSettings `json:"account"`
+	Account UserAccountSettings `json:"account" gorm:"foreignKey:uuid"`
 }

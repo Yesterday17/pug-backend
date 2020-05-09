@@ -16,8 +16,8 @@ func UserInfoGet(c *gin.Context) {
 	uuid := c.MustGet("uuid").(string)
 
 	var user models.User
-	db.First(&user, "uuid = ?", uuid)
-	if db.Error != nil {
+	err := db.Set("gorm:auto_preload", true).First(&user, "uuid = ?", uuid).Error
+	if err != nil {
 		c.JSON(500, e.ErrDBRead)
 		return
 	}
@@ -30,15 +30,15 @@ func UserSettingGet(c *gin.Context) {
 	uuid := c.MustGet("uuid").(string)
 
 	var settings models.UserSettings
-	db.First(&settings, "uuid = ?", uuid)
+	db.Set("gorm:auto_preload", true).First(&settings, "uuid = ?", uuid)
 	if db.Error != nil || settings.UUID == "" {
 		c.JSON(500, e.ErrDBRead)
 		return
 	}
 
 	var ret interface{}
-	ca := c.Param("category")
-	ke := c.Param("key")
+	ca := c.Query("category")
+	ke := c.Query("key")
 
 	if ca != "" {
 		// Get category
@@ -59,6 +59,8 @@ func UserSettingGet(c *gin.Context) {
 				ke: ret,
 			}
 		}
+	} else {
+		ret = settings
 	}
 
 	c.JSON(200, ret)
@@ -69,7 +71,7 @@ func UserSettingPatch(c *gin.Context) {
 	uuid := c.MustGet("uuid").(string)
 
 	var settings models.UserSettings
-	db.First(&settings, "uuid = ?", uuid)
+	db.Set("gorm:auto_preload", true).First(&settings, "uuid = ?", uuid)
 	if db.Error != nil || settings.UUID == "" {
 		c.JSON(500, e.ErrDBRead)
 		return
