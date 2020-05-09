@@ -60,7 +60,9 @@ func main() {
 
 	// Module
 	r.GET("/module", auth.Authorize, controllers.InitModulePipeRestriction, controllers.GetAllModuleInfo, controllers.SessionUpdate)
-	r.GET("/module/:id", auth.Authorize, controllers.InitModulePipeRestriction, controllers.GetModuleInfo, controllers.SessionUpdate)
+	r.GET("/module/:module", auth.Authorize, controllers.InitModulePipeRestriction, controllers.GetModuleInfo, controllers.SessionUpdate)
+	r.PATCH("/module/:module", auth.Authorize, controllers.InitModulePipeRestriction, controllers.EditModulePipeRestriction, controllers.SessionUpdate)
+	r.PATCH("/module/:module/:pipe", auth.Authorize, controllers.InitModulePipeRestriction, controllers.EditModulePipeRestriction, controllers.SessionUpdate)
 
 	if err := r.Run(cfg.Listen); err != nil {
 		log.Fatal(err)

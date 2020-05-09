@@ -19,8 +19,13 @@ var (
 	ErrDBRead  = Error{550, "数据读取失败"}
 	ErrDBWrite = Error{551, "数据写入失败"}
 
-	ErrModuleNotFound = Error{560, "模块不存在"}
-	ErrPipeNotFound   = Error{561, "管道不存在"}
+	ErrModuleNotFound     = Error{560, "模块不存在"}
+	ErrPipeNotFound       = Error{561, "管道不存在"}
+	ErrCannotRestrictSelf = Error{562, "限制权限不可超过自身权限等级"}
 
 	ErrPermissionDeny = Error{600, "权限不足"}
 )
+
+func (e *Error) Error() string {
+	return e.Message
+}

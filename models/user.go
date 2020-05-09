@@ -6,7 +6,7 @@ type User struct {
 	UUID      string `json:"uuid" gorm:"unique;not null"`
 	Username  string `json:"username" gorm:"unique;not null"`
 	Password  string `json:"-" gorm:"not null"`
-	UserLevel int    `json:"user_level" gorm:"not null"`
+	UserLevel int    `json:"level" gorm:"not null"`
 }
 
 type UserAccountSettings struct {

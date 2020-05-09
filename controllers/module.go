@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"strconv"
 	"sync"
 
 	e "github.com/Yesterday17/pug-backend/error"
@@ -34,6 +35,7 @@ func restrictionLevel(module, pipe string) int {
 			return g.(int)
 		}
 	}
+	// No Restriction
 	return 0
 }
 
@@ -43,6 +45,50 @@ func canUseModule(module string, level int) bool {
 
 func canUsePipe(module, pipe string, level int) bool {
 	return restrictionLevel(module, pipe) <= level
+}
+
+func setModulePipeRestriction(db *gorm.DB, module, pipe string, level int) error {
+	m, ok := ModulePipeRestriction.Load(module)
+	if !ok {
+		m = &sync.Map{}
+		ModulePipeRestriction.Store(module, m)
+	}
+
+	var rule models.ModuleRestrictRule
+	if pipe == "" {
+		// Module level restriction
+		if db != nil {
+			// Write to db first
+			db.First(&rule, "module_name = ?", module)
+			if db.Error != nil {
+				return &e.ErrDBRead
+			}
+			rule.MinAvailableUserLevel = level
+			db.Save(&rule)
+			if db.Error != nil {
+				return &e.ErrDBWrite
+			}
+		}
+
+		m.(*sync.Map).Store(ModuleLevelKeyword, level)
+	} else {
+		// Pipe level restriction
+		if db != nil {
+			// Write to db first
+			db.First(&rule, "module_name = ? AND pipe_name = ?", module, pipe)
+			if db.Error != nil {
+				return &e.ErrDBRead
+			}
+			rule.MinAvailableUserLevel = level
+			db.Save(&rule)
+			if db.Error != nil {
+				return &e.ErrDBWrite
+			}
+		}
+		m.(*sync.Map).Store(pipe, level)
+	}
+
+	return nil
 }
 
 func InitModulePipeRestriction(c *gin.Context) {
@@ -58,18 +104,7 @@ func InitModulePipeRestriction(c *gin.Context) {
 		ModulePipeRestriction = &sync.Map{}
 
 		for _, r := range restrictions {
-			m, ok := ModulePipeRestriction.Load(r.ModuleName)
-			if !ok {
-				m = &sync.Map{}
-				ModulePipeRestriction.Store(r.ModuleName, m)
-			}
-
-			if r.PipeName == "" {
-				// Module level restriction
-				m.(*sync.Map).Store(ModuleLevelKeyword, r.MinAvailableUserLevel)
-			} else {
-				m.(*sync.Map).Store(r.PipeName, r.MinAvailableUserLevel)
-			}
+			_ = setModulePipeRestriction(nil, r.ModuleName, r.PipeName, r.MinAvailableUserLevel)
 		}
 	}
 }
@@ -121,5 +156,71 @@ func GetModuleInfo(c *gin.Context) {
 }
 
 func EditModulePipeRestriction(c *gin.Context) {
+	db := c.MustGet("db").(*gorm.DB)
+	mgr := c.MustGet("manager").(api.ModuleManager)
+	level := c.MustGet("level").(int)
 
+	ul, ok := c.GetPostForm("level")
+	if !ok {
+		ul = "0"
+	}
+
+	userLevel, err := strconv.Atoi(ul)
+	if err != nil {
+		c.AbortWithStatusJSON(400, e.ErrInputInvalid)
+		return
+	}
+
+	if userLevel < 0 {
+		c.AbortWithStatusJSON(400, e.ErrInputInvalid)
+		return
+	} else if userLevel > level {
+		c.AbortWithStatusJSON(400, e.ErrCannotRestrictSelf)
+		return
+	}
+
+	module := c.Param("module")
+	pipe := c.Param("pipe")
+
+	// module does not exist
+	if m := mgr.Module(module); m == nil {
+		c.AbortWithStatusJSON(404, e.ErrModuleNotFound)
+		return
+	} else if pipe != "" {
+		// pipe param found but pipe not exist
+		if p := mgr.Pipe(module, pipe); p == nil {
+			c.AbortWithStatusJSON(404, e.ErrPipeNotFound)
+			return
+		}
+	}
+
+	// cannot edit level
+	if !canUsePipe(module, pipe, level) {
+		c.AbortWithStatusJSON(403, e.ErrPermissionDeny)
+		return
+	}
+
+	err = setModulePipeRestriction(db, module, pipe, userLevel)
+	if err != nil {
+		c.AbortWithStatusJSON(500, err)
+		return
+	}
+
+	var ret []string
+	if pipe == "" {
+		// Return available Modules
+		for _, m := range mgr.Modules() {
+			if canUseModule(m, level) {
+				ret = append(ret, m)
+			}
+		}
+	} else {
+		// Return available Pipes
+		for _, p := range mgr.Module(module).Pipes() {
+			if canUsePipe(module, p, level) {
+				ret = append(ret, p)
+			}
+		}
+	}
+	c.JSON(200, ret)
 }
