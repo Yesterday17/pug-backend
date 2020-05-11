@@ -62,7 +62,11 @@ func main() {
 	r.GET("/module", auth.Authorize, controllers.SessionUpdate, controllers.InitModulePipeRestriction, controllers.GetAllModuleInfo)
 	r.GET("/module/:module", auth.Authorize, controllers.SessionUpdate, controllers.InitModulePipeRestriction, controllers.GetModuleInfo)
 	r.PATCH("/module/:module", auth.Authorize, controllers.SessionUpdate, controllers.InitModulePipeRestriction, controllers.EditModulePipeRestriction)
-	r.PATCH("/module/:module/:pipe", auth.Authorize, controllers.SessionUpdate, controllers.InitModulePipeRestriction, controllers.EditModulePipeRestriction)
+
+	// Pipe
+	r.GET("/pipe", auth.Authorize, controllers.SessionUpdate, controllers.InitModulePipeRestriction, controllers.GetAllPipeInfo)
+	r.GET("/pipe/:module", auth.Authorize, controllers.SessionUpdate, controllers.InitModulePipeRestriction, controllers.GetPipeInfo)
+	r.PATCH("/pipe/:module/:pipe", auth.Authorize, controllers.SessionUpdate, controllers.InitModulePipeRestriction, controllers.EditModulePipeRestriction)
 
 	if err := r.Run(cfg.Listen); err != nil {
 		log.Fatal(err)

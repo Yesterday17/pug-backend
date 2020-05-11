@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"reflect"
 	"strconv"
 	"sync"
 
@@ -16,6 +17,12 @@ type ModuleInfo struct {
 	Description string   `json:"description"`
 	Author      []string `json:"author"`
 	Usage       string   `json:"usage"`
+}
+
+type PipeInfo struct {
+	Name     string                  `json:"name"`
+	Must     map[string]reflect.Kind `json:"must"`
+	Optional map[string]reflect.Kind `json:"optional"`
 }
 
 var ModulePipeRestriction *sync.Map
@@ -153,6 +160,58 @@ func GetModuleInfo(c *gin.Context) {
 		Author:      m.Author(),
 		Usage:       m.Usage(),
 	})
+}
+
+func GetAllPipeInfo(c *gin.Context) {
+	mgr := c.MustGet("manager").(api.ModuleManager)
+	level := c.MustGet("level").(int)
+
+	ret := map[string][]PipeInfo{}
+
+	modules := mgr.Modules()
+	for _, m := range modules {
+		if canUseModule(m, level) {
+			var ps []PipeInfo
+			mo := mgr.Module(m)
+			for _, p := range mo.Pipes() {
+				if canUsePipe(m, p, level) {
+					pi := mgr.Pipe(m, p)
+					ps = append(ps, PipeInfo{
+						Name:     p,
+						Must:     pi.Must(),
+						Optional: pi.Optional(),
+					})
+				}
+			}
+			ret[m] = ps
+		}
+	}
+
+	c.JSON(200, ret)
+}
+
+func GetPipeInfo(c *gin.Context) {
+	mgr := c.MustGet("manager").(api.ModuleManager)
+	level := c.MustGet("level").(int)
+	module := c.Param("module")
+
+	var ret []PipeInfo
+
+	if canUseModule(module, level) {
+		mo := mgr.Module(module)
+		for _, p := range mo.Pipes() {
+			if canUsePipe(module, p, level) {
+				pi := mgr.Pipe(module, p)
+				ret = append(ret, PipeInfo{
+					Name:     p,
+					Must:     pi.Must(),
+					Optional: pi.Optional(),
+				})
+			}
+		}
+	}
+
+	c.JSON(200, ret)
 }
 
 func EditModulePipeRestriction(c *gin.Context) {
