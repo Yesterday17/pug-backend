@@ -6,9 +6,12 @@ type PipeConstructed struct {
 	Owner     string `json:"-" gorm:"not null"`
 	OwnerUser User   `json:"owner" gorm:"foreignKey:uuid"`
 
+	Module string `json:"module"`
+	Pipe   string `json:"pipe"`
+
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Public      bool   `json:"public"`
 
-	Arguments map[string]interface{} `json:"arguments" sql:"type:LONGTEXT"`
+	Arguments string `json:"arguments"`
 }
