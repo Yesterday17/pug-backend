@@ -74,6 +74,10 @@ func main() {
 	r.GET("/pipes/:id", auth.Authorize, controllers.SessionUpdate, controllers.GetExtrudedPipeInfo)
 	r.DELETE("/pipes/:id", auth.Authorize, controllers.SessionUpdate, controllers.DeleteExtrudedPipe)
 
+	// Pipeline
+	r.GET("/pipeline", auth.Authorize, controllers.SessionUpdate, controllers.GetAllPipelines)
+	r.POST("/pipeline", auth.Authorize, controllers.SessionUpdate, controllers.CreatePipeline)
+
 	if err := r.Run(cfg.Listen); err != nil {
 		log.Fatal(err)
 	}

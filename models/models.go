@@ -59,5 +59,6 @@ func InitModels(s *ModelSettings) (db *gorm.DB) {
 	db.AutoMigrate(&ModuleRestrictRule{})
 
 	db.AutoMigrate(&PipeConstructed{})
+	db.AutoMigrate(&Pipeline{})
 	return
 }

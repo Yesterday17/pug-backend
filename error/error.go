@@ -20,9 +20,10 @@ var (
 	ErrDBWrite  = Error{551, "数据写入失败"}
 	ErrDBDelete = Error{552, "数据删除失败"}
 
-	ErrModuleNotFound     = Error{560, "模块不存在"}
-	ErrPipeNotFound       = Error{561, "管道不存在"}
-	ErrCannotRestrictSelf = Error{562, "限制权限不可超过自身权限等级"}
+	ErrModuleNotFound          = Error{560, "模块不存在"}
+	ErrPipeNotFound            = Error{561, "管道不存在"}
+	ErrConstructedPipeNotFound = Error{562, "构建管道不存在"}
+	ErrCannotRestrictSelf      = Error{563, "限制权限不可超过自身权限等级"}
 
 	ErrPermissionDeny           = Error{600, "权限不足"}
 	ErrCannotVisitPrivate       = Error{601, "无法访问他人 Private 内容"}
