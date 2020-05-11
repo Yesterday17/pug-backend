@@ -23,7 +23,8 @@ var (
 	ErrPipeNotFound       = Error{561, "管道不存在"}
 	ErrCannotRestrictSelf = Error{562, "限制权限不可超过自身权限等级"}
 
-	ErrPermissionDeny = Error{600, "权限不足"}
+	ErrPermissionDeny     = Error{600, "权限不足"}
+	ErrCannotVisitPrivate = Error{601, "无法访问他人 Private 内容"}
 )
 
 func (e *Error) Error() string {

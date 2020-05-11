@@ -22,10 +22,16 @@ type Model struct {
 	DeletedAt *time.Time `sql:"index" json:"-"`
 }
 
+type ModelWithHiddenID struct {
+	Model
+
+	ID uint `json:"-" gorm:"primary_key"`
+}
+
 type ModelWithID struct {
 	Model
 
-	ID uint `gorm:"primary_key" json:"-"`
+	ID uint `json:"id" gorm:"primary_key"`
 }
 
 func InitModels(s *ModelSettings) (db *gorm.DB) {
@@ -51,5 +57,7 @@ func InitModels(s *ModelSettings) (db *gorm.DB) {
 	db.AutoMigrate(&UserAccountSettings{})
 
 	db.AutoMigrate(&ModuleRestrictRule{})
+
+	db.AutoMigrate(&PipeConstructed{})
 	return
 }
