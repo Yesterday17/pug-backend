@@ -34,6 +34,17 @@ type ModelWithID struct {
 	ID uint `json:"id" gorm:"primary_key"`
 }
 
+type ModelIONDP struct {
+	ModelWithID
+
+	Owner     string `json:"-" gorm:"not null"`
+	OwnerUser User   `json:"owner" gorm:"foreignKey:owner"`
+
+	Name        string `json:"name" gorm:"not null"`
+	Description string `json:"description"`
+	Public      bool   `json:"public"`
+}
+
 func InitModels(s *ModelSettings) (db *gorm.DB) {
 	var err error
 
@@ -60,5 +71,9 @@ func InitModels(s *ModelSettings) (db *gorm.DB) {
 
 	db.AutoMigrate(&PipeConstructed{})
 	db.AutoMigrate(&Pipeline{})
+	db.AutoMigrate(&Workflow{})
+
+	db.AutoMigrate(&Work{})
+	db.AutoMigrate(&WorkLog{})
 	return
 }

@@ -70,11 +70,13 @@ func CreatePipeline(c *gin.Context) {
 	}
 
 	pl := models.Pipeline{
-		Owner:       uuid,
-		Name:        name,
-		Description: desc,
-		Public:      public,
-		Pipes:       pipes,
+		ModelIONDP: models.ModelIONDP{
+			Owner:       uuid,
+			Name:        name,
+			Description: desc,
+			Public:      public,
+		},
+		Pipes: pipes,
 	}
 	db.Create(&pl)
 	if db.Error != nil {

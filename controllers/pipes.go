@@ -110,13 +110,15 @@ func ExtrudePipe(c *gin.Context) {
 	}
 
 	db.Create(&models.PipeConstructed{
-		Owner:       uuid,
-		Module:      module,
-		Pipe:        pipe,
-		Name:        name,
-		Description: desc,
-		Public:      public,
-		Arguments:   args,
+		ModelIONDP: models.ModelIONDP{
+			Owner:       uuid,
+			Name:        name,
+			Description: desc,
+			Public:      public,
+		},
+		Module:    module,
+		Pipe:      pipe,
+		Arguments: args,
 	})
 	if db.Error != nil {
 		c.AbortWithStatusJSON(500, e.ErrDBWrite)
@@ -154,7 +156,7 @@ func DeleteExtrudedPipe(c *gin.Context) {
 	}
 
 	db.Delete(&models.PipeConstructed{
-		ModelWithID: models.ModelWithID{ID: uint(id)},
+		ModelIONDP: models.ModelIONDP{ModelWithID: models.ModelWithID{ID: uint(id)}},
 	})
 	if db.Error != nil {
 		c.AbortWithStatusJSON(500, e.ErrDBDelete)
